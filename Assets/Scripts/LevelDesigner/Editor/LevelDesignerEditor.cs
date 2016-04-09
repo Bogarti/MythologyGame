@@ -20,6 +20,7 @@ public class LevelDesignerEditor : Editor
 
     bool flip = false;
     Vector2 offset = Vector2.zero;
+    Vector2 scale = Vector2.one;
     bool lockOnRaster = true;
 
     void OnEnable()
@@ -58,6 +59,10 @@ public class LevelDesignerEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        scale = EditorGUILayout.Vector2Field("Scale", scale);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Flip");
         flip = EditorGUILayout.Toggle(flip);
         EditorGUILayout.EndHorizontal();
@@ -85,8 +90,8 @@ public class LevelDesignerEditor : Editor
             SpriteRenderer renderer = script.prefab.GetComponent<SpriteRenderer>();
             Sprite sprite = renderer.sprite;
             script.gizmoSize.z = 1;
-            script.gizmoSize.x = sprite.texture.width / sprite.pixelsPerUnit * script.prefab.transform.localScale.x;
-            script.gizmoSize.y = sprite.texture.height / sprite.pixelsPerUnit * script.prefab.transform.localScale.y;
+            script.gizmoSize.x = sprite.texture.width / sprite.pixelsPerUnit * script.prefab.transform.localScale.x * scale.x;
+            script.gizmoSize.y = sprite.texture.height / sprite.pixelsPerUnit * script.prefab.transform.localScale.y * scale.y;
 
             Vector2 tilePos = new Vector2();
             if (lockOnRaster)
@@ -161,9 +166,9 @@ public class LevelDesignerEditor : Editor
             tile.name = name;
             tile.transform.parent = GameObject.Find(script.GetSortingLayerNames()[script.layerIndex]).transform;
             if (flip)
-                tile.transform.localScale = new Vector3(-1, tile.transform.localScale.y);
+                tile.transform.localScale = new Vector3(-1 * tile.transform.localScale.x * scale.x, tile.transform.localScale.y * scale.y);
             else
-                tile.transform.localScale = new Vector3(1, tile.transform.localScale.y);
+                tile.transform.localScale = new Vector3(tile.transform.localScale.x * scale.x, tile.transform.localScale.y * scale.y);
 
             SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
             renderer.sortingLayerName = script.GetSortingLayerNames()[script.layerIndex];
