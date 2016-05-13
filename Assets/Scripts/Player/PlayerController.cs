@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
 
     public float maxSpeed = 4;
     public float jumpForce = 550;
@@ -15,12 +17,14 @@ public class PlayerController : MonoBehaviour {
 
     private bool jump = false;
 
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rigbody;
     private Animator animator;
+
+    public static int health = 100;
 
 	void Start ()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigbody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 	}
 	
@@ -34,7 +38,8 @@ public class PlayerController : MonoBehaviour {
     {
         float horizontal = Input.GetAxis("Horizontal");
         animator.SetFloat("speed", Mathf.Abs(horizontal));
-        rigidbody.velocity = new Vector2(horizontal * maxSpeed, rigidbody.velocity.y);
+        Camera.main.GetComponent<Animator>().SetFloat("Direction", horizontal);
+        rigbody.velocity = new Vector2(horizontal * maxSpeed, rigbody.velocity.y);
         if ((horizontal > 0 && !lookingRight) || (horizontal < 0 && lookingRight))
             Flip();
 
@@ -43,8 +48,21 @@ public class PlayerController : MonoBehaviour {
 
         if (jump)
         {
-            rigidbody.AddForce(new Vector2(0, jumpForce));
+            rigbody.AddForce(new Vector2(0, jumpForce));
             jump = false;
+        }
+    }
+
+    public void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.tag == "Death")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        if(col.tag == "CameraEvent")
+        {
+            Camera.main.GetComponent<CameraController>().Move(new Vector2(0, 1));
         }
     }
 
@@ -54,5 +72,18 @@ public class PlayerController : MonoBehaviour {
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+    }
+
+    public void ApplyDamage(int damage)
+    {
+        if (health - damage > 0)
+        {
+            health -= damage;
+        }
+        else
+        {
+            health = 100;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 }
