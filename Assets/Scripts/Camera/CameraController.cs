@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
-    Animator animator;
+    //Animator animator;
 
     public GameObject player;
     Vector3 pos;
@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
 
 	void Start ()
     {
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
 	}
 	
 	void Update ()

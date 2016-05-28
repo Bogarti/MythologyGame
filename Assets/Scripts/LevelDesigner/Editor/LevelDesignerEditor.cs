@@ -177,7 +177,10 @@ public class LevelDesignerEditor : Editor
             try
             {
                 if (renderer.sortingLayerName != "Default")
-                    tile.GetComponent<Collider2D>().enabled = false;
+                {
+                    foreach (Collider2D col in tile.GetComponents<Collider2D>())
+                        col.enabled = false;
+                }
             }
             catch (MissingComponentException){}
         }
